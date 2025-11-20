@@ -1,6 +1,53 @@
+# EDUMITRA -> AI-Driven Adaptive Learning Ecosystem
+
+## 📃A unified platform personalized in learning based on behavior, performance, pace & exam pattern — while offering dashboards for mentors.
+
+**Link to Repository:** [click here](https://github.com/Abhilash5880/Edumitra)
+
+This is a web app that creates personalized study plans, analyzes performance, leanring speeds, provides AI mentors, tracks progress for specific exams and study paths
+### ✨ Features
+
+* **Adaptive Study Engine:** ML-Based dynamic difficulty scaling
+* **AI Mentor Bot:** Doubt-solving + micro-explanation 
+* **Revision Intelligence:** Spaced repetition + weakness targeting.
+* **Emotion & Focus Input:** Behaviour signal prompts (optional mood-check)
+* **Mentor Dashboard:** AI insights on student readiness & risk flags.  
+
+### ⚙️Technologies used :
+| Layer | Tech. Stack |
+|:---|:---:|
+| Frontend | Next.js + Tailwind CSS |
+| Backend | Node.js |
+| Database | MongoDB | 
+| AI/ML | Python, TensorFlow/PyTorch, LLM API |
+| Adaptive Engine | Reinforcement Learning + Knowledge Graph |
+| Authentication | Firbase/Auth0 |
+| Hosting | Vercel |
+
+## 💡 User Workflow: Mermaid Flowchart
+
+```mermaid
+graph TD
+    A[Sign Up & Choose Exam: Builds learner profile & syllabus map] --> B(Quick diagnostic test: Baseline difficulty & weak areas)
+    B --> C{Personalized study path generated: Topic sequence + daily goals}
+    C --> D[Learning & practice: Live difficulty adjustment]
+    D --> E(Doubts asked to AI tutor: Instant personalized answers)
+    E --> F[Analytics dashboard & resources: Progress & focus alerts & providing appropriate resources]
+    F --> E
+```
+### 🤝 Contributing
+
+Contributions are welcome! If you have suggestions for improvements, new features, or bug fixes, please open an issue or submit a pull request.
+
+### 📝 License
+This project is open-source and available under the MIT license.
+
+##
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# Getting Started
+
 
 First, run the development server:
 
