@@ -1,14 +1,48 @@
+// app/api/auth/register/route.js
+import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 import { dbConnect } from "@/lib/dbConnect";
 import User from "@/models/User";
-import bcrypt from "bcryptjs";
 
 export async function POST(req) {
-  await dbConnect();
-  const { name, email, password, examType } = await req.json();
+  try {
+    const body = await req.json().catch(() => ({}));
+    const { name, email, password, examType } = body;
 
-  const hashed = await bcrypt.hash(password, 10);
+    if (!name || !email || !password) {
+      return NextResponse.json({ error: "Name, email and password are required" }, { status: 400 });
+    }
 
-  await User.create({ name, email, password: hashed, examType });
+    await dbConnect();
 
-  return Response.json({ success: true });
+    // Check if user exists
+    const existing = await User.findOne({ email: email.toLowerCase().trim() });
+    if (existing) {
+      return NextResponse.json({ error: "User with this email already exists" }, { status: 409 });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashed = await bcrypt.hash(password, salt);
+
+    const newUser = await User.create({
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
+      password: hashed,
+      examType: examType || "UPSC",
+    });
+
+    // For security do not return the password
+    const userSafe = {
+      id: newUser._id,
+      name: newUser.name,
+      email: newUser.email,
+      examType: newUser.examType,
+    };
+
+    return NextResponse.json({ success: true, user: userSafe }, { status: 201 });
+  } catch (err) {
+    console.error("register error:", err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
 }

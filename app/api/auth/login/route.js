@@ -1,22 +1,34 @@
+// app/api/auth/login/route.js
+import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 import { dbConnect } from "@/lib/dbConnect";
 import User from "@/models/User";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { signToken } from "@/lib/auth";
 
 export async function POST(req) {
-  await dbConnect();
-  const { email, password } = await req.json();
+  try {
+    const body = await req.json().catch(() => ({}));
+    const { email, password } = body;
+    if (!email || !password) {
+      return NextResponse.json({ error: "Email and password required" }, { status: 400 });
+    }
 
-  const user = await User.findOne({ email });
-  if (!user) return Response.json({ error: "User not found" }, { status: 404 });
+    await dbConnect();
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (!user) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
 
-  const isValid = await bcrypt.compare(password, user.password);
-  if (!isValid) return Response.json({ error: "Wrong password" }, { status: 400 });
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
 
-  const token = jwt.sign(
-    { id: user._id, email: user.email },
-    process.env.JWT_SECRET
-  );
+    const token = signToken({ sub: user._id.toString(), email: user.email });
 
-  return Response.json({ token });
+    return NextResponse.json({ token, user: { id: user._id, name: user.name, email: user.email } }, { status: 200 });
+  } catch (err) {
+    console.error("login error:", err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
 }
