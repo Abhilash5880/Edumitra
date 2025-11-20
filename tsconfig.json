@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "components/Navbar.jsx", "app/quiz/page.jsx"  ],
   "exclude": ["node_modules"]
 }
