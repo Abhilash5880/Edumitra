@@ -4,6 +4,8 @@
 
 **Link to Repository:** [click here](https://github.com/Abhilash5880/Edumitra)
 
+**Deployment:** [click here](https://edumitra-mm9l.vercel.app/)
+
 This is a web app that creates personalized study plans, analyzes performance, leanring speeds, provides AI mentors, tracks progress for specific exams and study paths
 ### ✨ Features
 
