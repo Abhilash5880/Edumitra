@@ -1,4 +1,4 @@
-# EDUMITRA -> AI-Driven Adaptive Learning Ecosystem
+# EDUMITRA -> AI-Driven Adaptive Learning Ecosystem  (work in progress)
 
 ## 📃A unified platform personalized in learning based on behavior, performance, pace & exam pattern — while offering dashboards for mentors.
 
