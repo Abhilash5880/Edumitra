@@ -3,28 +3,39 @@ import { useState } from "react";
 import QuizCard from "@/components/QuizCard";
 
 export default function QuizPage() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [quiz, setQuiz] = useState([]);
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
 
   async function generateQuiz() {
+    setLoading(true);
+    setError(null);
     setSubmitted(false);
     setAnswers({});
     setScore(0);
 
-    const res = await fetch("/api/quiz/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        topic: "Probability",
-        level: "easy",
-        count: 5,
-      }),
-    });
+    try {
+      const res = await fetch("/api/quiz/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          topic: "Probability",
+          difficulty: "easy",
+        }),
+      });
 
-    const data = await res.json();
-    setQuiz(data.quiz);
+      const data = await res.json();
+      if (!res.ok) throw new Error();
+
+      setQuiz(data);
+    } catch {
+      setError("Unable to generate quiz. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   function handleAnswer(qid, choice) {
@@ -34,7 +45,6 @@ export default function QuizPage() {
 
   function submitQuiz() {
     let correct = 0;
-
     quiz.forEach((q) => {
       if (answers[q.id] === q.answer) correct++;
     });
@@ -49,10 +59,13 @@ export default function QuizPage() {
 
       <button
         onClick={generateQuiz}
+        disabled={loading}
         className="mb-6 px-4 py-2 bg-indigo-600 text-white rounded"
       >
-        Generate Quiz
+        {loading ? "Generating…" : "Generate Quiz"}
       </button>
+
+      {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
 
       {quiz.map((q) => (
         <QuizCard

@@ -1,17 +1,10 @@
-// app/api/quiz/generate/route.js
-import { NextResponse } from "next/server";
+/* app/api/quiz/generate/route.js
 
-/**
- * POST /api/quiz/generate
- * Body: { topic?: string, level?: "easy"|"medium"|"hard", count?: number }
- *
- * Behavior:
- *  - If process.env.USE_OPENAI === "true" and OPENAI_API_KEY is set, will call OpenAI (completion/chat) to get quiz.
- *  - Otherwise returns a deterministic mock quiz useful for UI development.
- */
+
+
 
 async function generateMockQuiz(topic = "General", level = "medium", count = 5) {
-  // Simple deterministic mock generator (no external deps)
+ 
   const baseQs = [
     {
       id: "q1",
@@ -124,4 +117,26 @@ export async function POST(req) {
     console.error("quiz generate error:", err);
     return NextResponse.json({ error: err.message || "Server error generating quiz" }, { status: 500 });
   }
+}
+*/
+import { NextResponse } from "next/server";
+import { askAI } from "@/lib/openai";
+
+export async function POST(req) {
+  const { topic, difficulty } = await req.json();
+
+  const prompt = `
+Generate 5 multiple-choice questions on ${topic} (${difficulty}).
+Return JSON:
+[
+ { "question": "", "choices": [], "answer": "" }
+]
+`;
+
+  const raw = await askAI(
+    "You generate academic quizzes.",
+    prompt
+  );
+
+  return NextResponse.json(JSON.parse(raw));
 }

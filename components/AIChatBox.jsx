@@ -1,4 +1,3 @@
-// components/AIChatBox.jsx
 "use client";
 import { useState } from "react";
 
@@ -8,13 +7,16 @@ export default function AIChatBox() {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   async function send() {
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return;
+
     const userMsg = { from: "user", text: input };
-    setMessages((s) => [...s, userMsg]);
+    setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setLoading(true);
+    setError(null);
 
     try {
       const res = await fetch("/api/mentor/chat", {
@@ -22,31 +24,63 @@ export default function AIChatBox() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMsg.text }),
       });
+
       const data = await res.json();
-      const reply = data?.reply || "Sorry, no answer.";
-      setMessages((s) => [...s, { from: "bot", text: reply }]);
-    } catch (err) {
-      setMessages((s) => [...s, { from: "bot", text: "Error contacting mentor." }]);
+      if (!res.ok) throw new Error();
+
+      setMessages((prev) => [
+        ...prev,
+        { from: "bot", text: data.reply || "No response." },
+      ]);
+    } catch {
+      setError("AI is temporarily unavailable. Please try again.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="rounded border p-4 bg-white dark:bg-gray-400">
+    <div className="rounded-xl border p-4 bg-white shadow-sm">
       <div className="h-56 overflow-auto mb-3 space-y-2">
         {messages.map((m, i) => (
-          <div key={i} className={m.from === "bot" ? "text-sm text-zinc-700" : "text-sm text-zinc-900 text-right"}>
-            <div className={`inline-block px-3 py-2 rounded ${m.from === "bot" ? "bg-gray-700 dark:bg-white" : "bg-indigo-600 text-white"}`}>
+          <div
+            key={i}
+            className={`text-sm ${
+              m.from === "user" ? "text-right" : "text-left"
+            }`}
+          >
+            <span
+              className={`inline-block px-3 py-2 rounded-lg ${
+                m.from === "user"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-100 text-gray-800"
+              }`}
+            >
               {m.text}
-            </div>
+            </span>
           </div>
         ))}
       </div>
 
+      {loading && (
+        <p className="text-xs text-gray-500 mb-1">AI is thinking… 🤖</p>
+      )}
+      {error && <p className="text-xs text-red-500 mb-1">{error}</p>}
+
       <div className="flex gap-2">
-        <input value={input} onChange={(e) => setInput(e.target.value)} className="flex-1 rounded border px-3 py-2" placeholder="Ask a question..." />
-        <button onClick={send} disabled={loading} className="rounded bg-indigo-600 px-4 py-2 text-white">{loading ? "..." : "Send"}</button>
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="flex-1 rounded border px-3 py-2"
+          placeholder="Ask a question..."
+        />
+        <button
+          onClick={send}
+          disabled={loading}
+          className="rounded bg-indigo-600 px-4 py-2 text-white"
+        >
+          {loading ? "…" : "Send"}
+        </button>
       </div>
     </div>
   );
