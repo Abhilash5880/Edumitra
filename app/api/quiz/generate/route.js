@@ -119,6 +119,7 @@ export async function POST(req) {
   }
 }
 */
+import { safeParseJSON } from "@/lib/safeJson";
 import { NextResponse } from "next/server";
 import { askAI } from "@/lib/openai";
 
@@ -127,16 +128,42 @@ export async function POST(req) {
 
   const prompt = `
 Generate 5 multiple-choice questions on ${topic} (${difficulty}).
-Return JSON:
+Return JSON array ONLY:
 [
- { "question": "", "choices": [], "answer": "" }
+  {
+    "question": "",
+    "choices": ["", "", "", ""],
+    "answer": ""
+  }
 ]
 `;
 
-  const raw = await askAI(
-    "You generate academic quizzes.",
-    prompt
-  );
+  const raw = await askAI("You generate academic quizzes.", prompt);
+  const parsed = safeParseJSON(raw?.trim());
 
-  return NextResponse.json(JSON.parse(raw));
+  if (!parsed || !Array.isArray(parsed)) {
+    // 🔐 DEMO SAFE FALLBACK
+    return NextResponse.json(
+      [
+        {
+          id: "demo-q1",
+          question: "Demo question: What is 2 + 2?",
+          choices: ["1", "2", "3", "4"],
+          answer: "4",
+        },
+      ],
+      { status: 200 }
+    );
+  }
+
+  // 🔐 Normalize IDs
+  const normalized = parsed.map((q, i) => ({
+    id: `ai-q${i + 1}`,
+    question: q.question,
+    choices: q.choices,
+    answer: q.answer,
+  }));
+
+  return NextResponse.json(normalized);
 }
+

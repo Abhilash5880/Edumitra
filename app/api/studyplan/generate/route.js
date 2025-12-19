@@ -19,25 +19,45 @@ export async function POST(req) {
   return Response.json({ plan: response.output_text });
 }
 */
+import { safeParseJSON } from "@/lib/safeJson";
 import { NextResponse } from "next/server";
 import { askAI } from "@/lib/openai";
 
 export async function POST(req) {
   const { exam, days, hours } = await req.json();
 
-  const prompt = `
-Create a ${days}-day study plan for ${exam},
-${hours} hours per day.
-Return JSON:
+ const prompt = `
+Create a realistic ${days}-day study plan for ${exam}.
+Student can study ${hours} hours per day.
+Include revision and practice days.
+Return ONLY valid JSON array:
 [
- { "day": 1, "topic": "", "hours": "" }
+  { "day": 1, "topic": "", "hours": "" }
 ]
 `;
+
 
   const raw = await askAI(
     "You create optimized study schedules.",
     prompt
   );
 
-  return NextResponse.json(JSON.parse(raw));
+  const parsed = safeParseJSON(raw);
+
+  if (!parsed) {
+    return NextResponse.json(
+      { error: "AI output invalid" },
+      { status: 500 }
+    );
+  }
+
+  const normalized = parsed.map((p) => ({
+    day: p.day,
+    topic: p.topic,
+    hours: String(p.hours),
+  }));
+
+return NextResponse.json(normalized);
+
 }
+

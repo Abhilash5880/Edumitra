@@ -10,6 +10,10 @@ export default function QuizPage() {
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
 
+  // ✅ NEW: topic & difficulty state
+  const [topic, setTopic] = useState("Probability");
+  const [difficulty, setDifficulty] = useState("easy");
+
   async function generateQuiz() {
     setLoading(true);
     setError(null);
@@ -22,15 +26,16 @@ export default function QuizPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          topic: "Probability",
-          difficulty: "easy",
+          topic,
+          difficulty,
         }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error();
 
-      setQuiz(data);
+      // support both { quiz: [] } and [] responses
+      setQuiz(data.quiz || data);
     } catch {
       setError("Unable to generate quiz. Please try again.");
     } finally {
@@ -57,13 +62,33 @@ export default function QuizPage() {
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4">Practice Quiz</h1>
 
-      <button
-        onClick={generateQuiz}
-        disabled={loading}
-        className="mb-6 px-4 py-2 bg-indigo-600 text-white rounded"
-      >
-        {loading ? "Generating…" : "Generate Quiz"}
-      </button>
+      {/* ✅ Topic + Difficulty Controls */}
+      <div className="flex gap-3 mb-6">
+        <input
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          placeholder="Topic (e.g. Probability)"
+          className="px-3 py-2 border rounded w-full"
+        />
+
+        <select
+          value={difficulty}
+          onChange={(e) => setDifficulty(e.target.value)}
+          className="px-3 py-2 border rounded"
+        >
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+
+        <button
+          onClick={generateQuiz}
+          disabled={loading}
+          className="px-4 py-2 bg-indigo-600 text-white rounded"
+        >
+          {loading ? "Generating…" : "Generate"}
+        </button>
+      </div>
 
       {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
 
