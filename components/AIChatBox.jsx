@@ -33,11 +33,11 @@ export default function AIChatBox() {
   }
 
   return (
-    <div className="rounded border p-4 bg-white dark:bg-zinc-900">
+    <div className="rounded border p-4 bg-white dark:bg-gray-400">
       <div className="h-56 overflow-auto mb-3 space-y-2">
         {messages.map((m, i) => (
           <div key={i} className={m.from === "bot" ? "text-sm text-zinc-700" : "text-sm text-zinc-900 text-right"}>
-            <div className={`inline-block px-3 py-2 rounded ${m.from === "bot" ? "bg-gray-100 dark:bg-zinc-800" : "bg-indigo-600 text-white"}`}>
+            <div className={`inline-block px-3 py-2 rounded ${m.from === "bot" ? "bg-gray-700 dark:bg-white" : "bg-indigo-600 text-white"}`}>
               {m.text}
             </div>
           </div>

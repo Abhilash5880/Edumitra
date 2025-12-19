@@ -4,13 +4,13 @@ import Link from "next/link";
 
 export default function Sidebar() {
   return (
-    <aside className="w-60 border-r p-4 hidden md:block bg-white dark:bg-zinc-900">
+    <aside className="h-screen w-64 bg-white border-r p-4 text-black">
       <h4 className="font-semibold mb-4">Navigation</h4>
       <ul className="space-y-2 text-sm">
-        <li><Link href="/dashboard" className="block px-2 py-1 rounded hover:bg-gray-50">Dashboard</Link></li>
-        <li><Link href="/quiz" className="block px-2 py-1 rounded hover:bg-gray-50">Quizzes</Link></li>
-        <li><Link href="/studyplan" className="block px-2 py-1 rounded hover:bg-gray-50">Study Plan</Link></li>
-        <li><Link href="/login" className="block px-2 py-1 rounded hover:bg-gray-50">Login</Link></li>
+        <li><Link href="/dashboard" className="block rounded-md px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100 hover:text-black">Dashboard</Link></li>
+        <li><Link href="/quiz" className="block rounded-md px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100 hover:text-black">Quizzes</Link></li>
+        <li><Link href="/studyplan" className="block rounded-md px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100 hover:text-black">Study Plan</Link></li>
+        <li><Link href="/login" className="block rounded-md px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100 hover:text-black">Login</Link></li>
       </ul>
     </aside>
   );

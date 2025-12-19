@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function ChatInput({ onSend }) {
+export default function ChatInput({ value, onChange, onSend }) {
   const [message, setMessage] = useState("");
 
   function handleSend() {
@@ -10,17 +10,16 @@ export default function ChatInput({ onSend }) {
   }
 
   return (
-    <div className="flex gap-2 mt-4">
+    <div className="border-t bg-white p-3 flex gap-2">
       <input
-        className="flex-1 border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        placeholder="Ask your AI Mentor..."
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && handleSend()}
+        value={value}
+        onChange={onChange}
+        placeholder="Ask a question…"
+        className="flex-1 rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
       />
       <button
-        onClick={handleSend}
-        className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700"
+        onClick={onSend}
+        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700"
       >
         Send
       </button>
