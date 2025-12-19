@@ -1,77 +1,86 @@
-// app/quiz/page.jsx
 "use client";
 import { useState } from "react";
-import Navbar from "@/components/Navbar";
 import QuizCard from "@/components/QuizCard";
 
-export default function Page() {
-  const [topic, setTopic] = useState("Probability");
-  const [level, setLevel] = useState("medium");
-  const [questions, setQuestions] = useState(null);
+export default function QuizPage() {
+  const [quiz, setQuiz] = useState([]);
   const [answers, setAnswers] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [score, setScore] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [score, setScore] = useState(0);
 
-  async function generate() {
-    setLoading(true);
-    setQuestions(null);
-    setScore(null);
-    try {
-      const res = await fetch("/api/quiz/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic, level }),
-      });
-      const data = await res.json();
-      // Expecting structured { quiz: [...] }
-      setQuestions(data.quiz || []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+  async function generateQuiz() {
+    setSubmitted(false);
+    setAnswers({});
+    setScore(0);
+
+    const res = await fetch("/api/quiz/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        topic: "Probability",
+        level: "easy",
+        count: 5,
+      }),
+    });
+
+    const data = await res.json();
+    setQuiz(data.quiz);
   }
 
-  function handleAnswer(id, choice) {
-    setAnswers((s) => ({ ...s, [id]: choice }));
+  function handleAnswer(qid, choice) {
+    if (submitted) return;
+    setAnswers((prev) => ({ ...prev, [qid]: choice }));
   }
 
-  function submit() {
-    // Client-side naive scoring (demo) — count answered
-    const total = (questions || []).length;
-    const answered = Object.keys(answers).length;
-    setScore(Math.round((answered / Math.max(1, total)) * 100));
+  function submitQuiz() {
+    let correct = 0;
+
+    quiz.forEach((q) => {
+      if (answers[q.id] === q.answer) correct++;
+    });
+
+    setScore(Math.round((correct / quiz.length) * 100));
+    setSubmitted(true);
   }
 
   return (
-    <>
-      <Navbar />
-      <main className="mx-auto max-w-4xl px-6 py-8">
-        <h1 className="text-2xl font-bold mb-4">Practice Quiz</h1>
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-4">Practice Quiz</h1>
 
-        <div className="flex gap-3 mb-6">
-          <input value={topic} onChange={(e) => setTopic(e.target.value)} className="rounded border px-3 py-2" placeholder="Topic" />
-          <select value={level} onChange={(e) => setLevel(e.target.value)} className="rounded border px-3 py-2">
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-          <button onClick={generate} disabled={loading} className="rounded bg-indigo-600 px-4 py-2 text-white">{loading ? "Generating..." : "Generate"}</button>
+      <button
+        onClick={generateQuiz}
+        className="mb-6 px-4 py-2 bg-indigo-600 text-white rounded"
+      >
+        Generate Quiz
+      </button>
+
+      {quiz.map((q) => (
+        <QuizCard
+          key={q.id}
+          q={q}
+          onAnswer={handleAnswer}
+          submitted={submitted}
+          userAnswer={answers[q.id]}
+        />
+      ))}
+
+      {quiz.length > 0 && !submitted && (
+        <button
+          onClick={submitQuiz}
+          className="mt-6 px-6 py-3 bg-green-600 text-white rounded"
+        >
+          Submit Quiz
+        </button>
+      )}
+
+      {submitted && (
+        <div className="mt-8 p-6 bg-gray-100 rounded-xl">
+          <h2 className="text-xl font-bold mb-2">Results</h2>
+          <p className="text-lg">
+            Score: <span className="font-semibold">{score}%</span>
+          </p>
         </div>
-
-        {questions && questions.length > 0 ? (
-          <>
-            {questions.map((q) => <QuizCard key={q.id} q={q} onAnswer={handleAnswer} />)}
-            <div className="flex gap-3">
-              <button onClick={submit} className="rounded bg-green-600 px-4 py-2 text-white">Submit</button>
-              <button onClick={() => { setQuestions(null); setAnswers({}); setScore(null); }} className="rounded border px-4 py-2">Reset</button>
-            </div>
-            {score !== null && <div className="mt-4 text-lg">Score: {score}%</div>}
-          </>
-        ) : (
-          <div className="text-zinc-600">No quiz loaded. Click Generate to start.</div>
-        )}
-      </main>
-    </>
+      )}
+    </div>
   );
 }
