@@ -1,4 +1,4 @@
-// app/dashboard/page.jsx
+
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -15,12 +15,12 @@ export default function Page() {
   useEffect(() => {
   const token = localStorage.getItem("token");
 
-  // DEMO MODE: allow dashboard without login
+ 
   if (!token) {
     console.warn("Demo mode: no auth token found");
   }
 
-  // ✅ IMPORTANT: finish loading check
+
   setLoading(false);
 }, []);
 
@@ -66,7 +66,7 @@ export default function Page() {
             </p>
           </div>
 
-          {/* 🔽 ADDITIONS START HERE (C2) */}
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="rounded border p-4 bg-white">
               <div className="flex items-center justify-between mb-2">
@@ -101,7 +101,7 @@ export default function Page() {
               </div>
             </div>
           </div>
-          {/* 🔼 ADDITIONS END HERE */}
+         
         </main>
       </div>
     </>

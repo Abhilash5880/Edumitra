@@ -1,4 +1,4 @@
-// app/api/auth/register/route.js
+
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { dbConnect } from "@/lib/dbConnect";
@@ -15,13 +15,13 @@ export async function POST(req) {
 
     await dbConnect();
 
-    // Check if user exists
+ 
     const existing = await User.findOne({ email: email.toLowerCase().trim() });
     if (existing) {
       return NextResponse.json({ error: "User with this email already exists" }, { status: 409 });
     }
 
-    // Hash password
+   
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
 
@@ -32,7 +32,7 @@ export async function POST(req) {
       examType: examType || "UPSC",
     });
 
-    // For security do not return the password
+ 
     const userSafe = {
       id: newUser._id,
       name: newUser.name,

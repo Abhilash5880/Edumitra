@@ -1,14 +1,6 @@
 // app/api/quiz/evaluate/route.js
 import { NextResponse } from "next/server";
 
-/**
- * POST /api/quiz/evaluate
- * Body: { quiz: [{ id, question, choices, answer }], answers: { [questionId]: chosenText } }
- *
- * Returns: { total, correct, score (0-100), details: [{id, correctAnswer, givenAnswer, correct: bool}], }
- *
- * NOTE: For a production system you would check server-stored correct answers (DB) rather than trusting the quiz payload from client.
- */
 
 export async function POST(req) {
   try {

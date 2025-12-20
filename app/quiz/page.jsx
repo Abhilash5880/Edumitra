@@ -10,7 +10,6 @@ export default function QuizPage() {
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
 
-  // ✅ NEW: topic & difficulty state
   const [topic, setTopic] = useState("Probability");
   const [difficulty, setDifficulty] = useState("easy");
 

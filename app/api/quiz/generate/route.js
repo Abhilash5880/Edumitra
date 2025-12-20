@@ -1,8 +1,4 @@
-/* app/api/quiz/generate/route.js
-
-
-
-
+import { NextResponse } from "next/server";
 async function generateMockQuiz(topic = "General", level = "medium", count = 5) {
  
   const baseQs = [
@@ -118,7 +114,7 @@ export async function POST(req) {
     return NextResponse.json({ error: err.message || "Server error generating quiz" }, { status: 500 });
   }
 }
-*/
+/*
 import { safeParseJSON } from "@/lib/safeJson";
 import { NextResponse } from "next/server";
 import { askAI } from "@/lib/openai";
@@ -142,7 +138,7 @@ Return JSON array ONLY:
   const parsed = safeParseJSON(raw?.trim());
 
   if (!parsed || !Array.isArray(parsed)) {
-    // 🔐 DEMO SAFE FALLBACK
+    
     return NextResponse.json(
       [
         {
@@ -167,3 +163,4 @@ Return JSON array ONLY:
   return NextResponse.json(normalized);
 }
 
+*/
